@@ -1,26 +1,44 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <h1>Character Development System</h1>
+    <div>
+      <input v-model="newUsername" placeholder="Enter username">
+      <button @click="createUser">Create User</button>
+    </div>
+    <h2>Users</h2>
+    <ul>
+      <li v-for="user in users" :key="user.id">
+        {{ user.username }} - Exp: {{ user.experience }}, Gold: {{ user.gold }}
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      users: [],
+      newUsername: ''
+    };
+  },
+  methods: {
+    async createUser() {
+      const response = await axios.post('http://localhost:3000/users', {
+        username: this.newUsername
+      });
+      this.users.push(response.data);
+      this.newUsername = '';
+    },
+    async fetchUsers() {
+      const response = await axios.get('http://localhost:3000/users');
+      this.users = response.data;
+    }
+  },
+  mounted() {
+    this.fetchUsers();
   }
-}
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
